@@ -1,0 +1,32 @@
+import React, { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import MovieCard from "./MovieCard";
+import useSWR from "swr";
+import { fetcher } from "../../config";
+
+const MovieList = ({ type = "now_playing" }) => {
+  const [movie, setMovie] = useState([]);
+  const { data } = useSWR(
+    `https://api.themoviedb.org/3/movie/${type}?api_key=a58d8f2dcc2e162008480323ba82d932`,
+    fetcher
+  );
+  useEffect(() => {
+    if (data && data.results) {
+      setMovie(data.results);
+    }
+  }, [data]);
+  return (
+    <div className="movie-list">
+      <Swiper grabCursor={true} spaceBetween={40} slidesPerView={"auto"}>
+        {movie.length > 0 &&
+          movie.map((item) => (
+            <SwiperSlide key={item.id}>
+              <MovieCard data={item}></MovieCard>
+            </SwiperSlide>
+          ))}
+      </Swiper>
+    </div>
+  );
+};
+
+export default MovieList;
